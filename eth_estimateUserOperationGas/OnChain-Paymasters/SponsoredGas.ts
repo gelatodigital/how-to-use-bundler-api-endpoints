@@ -74,8 +74,10 @@ const rpcUserOp: any = {
   signature: userOp.signature,
   paymaster: userOp.paymaster,
   paymasterData: userOp.paymasterData,
-  paymasterPostOpGasLimit: userOp.paymasterPostOpGasLimit,
-  paymasterVerificationGasLimit: userOp.paymasterVerificationGasLimit,
+  paymasterPostOpGasLimit: toHex(userOp.paymasterPostOpGasLimit ?? 0n),
+  paymasterVerificationGasLimit: toHex(userOp.paymasterVerificationGasLimit ?? 0n),
+  maxFeePerGas: toHex(userOp.maxFeePerGas),
+  maxPriorityFeePerGas: toHex(userOp.maxPriorityFeePerGas),
 };
 
 if (userOp.factory && userOp.factory !== "0x") {

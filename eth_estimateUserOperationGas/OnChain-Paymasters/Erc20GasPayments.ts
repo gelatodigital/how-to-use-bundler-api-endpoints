@@ -101,20 +101,23 @@ const toHex = (n: bigint) => `0x${n.toString(16)}`;
 const rpcUserOp: any = {
   sender: userOp.sender,
   nonce: toHex(userOp.nonce),
+  ...(userOp.factory && userOp.factory !== "0x"
+    ? {
+        factory: userOp.factory,
+        factoryData: userOp.factoryData ?? "0x",
+      }
+    : {}),
   callData: userOp.callData,
   signature: userOp.signature,
   maxFeePerGas: toHex(userOp.maxFeePerGas),
   maxPriorityFeePerGas: toHex(userOp.maxPriorityFeePerGas),
   paymaster: userOp.paymaster,
   paymasterData: userOp.paymasterData,
-  paymasterPostOpGasLimit: toHex(userOp.paymasterPostOpGasLimit),
   paymasterVerificationGasLimit: toHex(userOp.paymasterVerificationGasLimit),
+  paymasterPostOpGasLimit: toHex(userOp.paymasterPostOpGasLimit),
 };
 
-if (userOp.factory && userOp.factory !== "0x") {
-  rpcUserOp.factory = userOp.factory;
-  rpcUserOp.factoryData = userOp.factoryData ?? "0x";
-}
+console.log("\nPrepared UserOperation", rpcUserOp);
 
 /* ───────────────── 6. Call eth_estimateUserOperationGas ────────────── */
 console.log("\n➡️  Requesting gas estimation …");
