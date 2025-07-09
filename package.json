@@ -1,0 +1,30 @@
+{
+  "type": "module",
+  "scripts": {
+    "check-chain": "pnpm ts-node eth_chainId/checkBundlerChainId.ts",
+    "send-userop": "pnpm ts-node eth_sendUserOperation/sendUserOp1Balance.ts",
+    "send-userop-native": "pnpm ts-node eth_sendUserOperation/sendUserOpNative.ts",
+    "estimate-gas": "pnpm ts-node eth_estimateUserOperationGas/estimateUserOperationGas.ts",
+    "estimate-gas-native": "pnpm ts-node eth_estimateUserOperationGas/estimateUserOperationGasNative.ts",
+    "get-userop": "pnpm ts-node eth_getUserOperationByHash/getUserOperationByHash.ts",
+    "get-receipt": "pnpm ts-node eth_getUserOperationReceipt/getUserOperationReceipt.ts",
+    "max-priority-fee-sponsored": "pnpm ts-node eth_maxPriorityFeePerGas/maxPriorityFeePerGasSponsored.ts",
+    "max-priority-fee-native": "pnpm ts-node eth_maxPriorityFeePerGas/maxPriorityFeePerGasNative.ts",
+    "supported-entrypoints": "pnpm ts-node eth_supportedEntryPoints/supportedEntryPoints.ts",
+    "userop-gas-price-sponsored": "pnpm ts-node eth_getUserOperationGasPrice/getUserOperationGasPriceSponsored.ts",
+    "userop-gas-price-native": "pnpm ts-node eth_getUserOperationGasPrice/getUserOperationGasPriceNative.ts"
+  },
+  "dependencies": {
+    "@gelatonetwork/smartwallet": "^0.0.16",
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/sdk": "^5.4.39",
+    "dotenv": "^17.0.1",
+    "permissionless": "^0.2.47",
+    "tslib": "^2.8.1",
+    "viem": "^2.29"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10"
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+}
