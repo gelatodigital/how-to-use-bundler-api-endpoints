@@ -8,6 +8,15 @@ import { privateKeyToAccount } from "viem/accounts";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 
+type GasPrices = {
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+};
+
+type EthGetUserOperationGasPriceRpc = {
+  ReturnType: GasPrices;
+  Parameters: [];
+};
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032";
 const chain = sepolia;
 const chainID = chain.id;
@@ -28,15 +37,27 @@ console.log("Circle Smart Account address:", account.address);
 // 3) “Bundler” = your node’s eth_sendUserOperation
 const bundlerClient = createBundlerClient({
   client: publicClient,
-  transport: http(
-    `https://api.gelato.digital/bundlers/${chainID}/rpc`
-  ),
+  transport: http(`https://api.gelato.digital/bundlers/${chainID}/rpc`),
+  userOperation: {
+    estimateFeesPerGas: async ({ account, bundlerClient, userOperation }) => {
+      const gasPrices =
+        await bundlerClient.request<EthGetUserOperationGasPriceRpc>({
+          method: "eth_getUserOperationGasPrice",
+          params: [],
+        });
+      return {
+        maxFeePerGas: BigInt(gasPrices.maxFeePerGas),
+        maxPriorityFeePerGas: BigInt(gasPrices.maxPriorityFeePerGas),
+      };
+    },
+  },
 });
 
 // ─── 4. Build & sign the (sponsored) UserOperation ──────────────────────
 let userOperation = await bundlerClient.prepareUserOperation({
   account,
   calls: [{ to: account.address, value: 0n, data: "0x" }],
+  
 });
 
 const signature = await account.signUserOperation(userOperation);

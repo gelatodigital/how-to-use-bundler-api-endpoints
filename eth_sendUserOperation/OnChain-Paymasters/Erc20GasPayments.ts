@@ -39,8 +39,8 @@ const owner = privateKeyToAccount(PRIVATE_KEY as any);
 const account = await toCircleSmartAccount({ client, owner });
 console.log("Circle Smart Account address:", account.address);
 
-/* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
+  /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
+  const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
 
 const paymaster = {
   async getPaymasterData(parameters) {

@@ -8,6 +8,16 @@ import { privateKeyToAccount } from "viem/accounts";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 
+type GasPrices = {
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+};
+
+type EthGetUserOperationGasPriceRpc = {
+  ReturnType: GasPrices;
+  Parameters: [];
+};
+
 type UserOperation = ViemUserOperation;
 
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
@@ -42,6 +52,19 @@ const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
 const bundlerClient = createBundlerClient({
   client: publicClient,
   transport: http(bundlerUrl),
+  userOperation: {
+    estimateFeesPerGas: async ({ account, bundlerClient, userOperation }) => {
+      const gasPrices =
+        await bundlerClient.request<EthGetUserOperationGasPriceRpc>({
+          method: "eth_getUserOperationGasPrice",
+          params: [],
+        });
+      return {
+        maxFeePerGas: BigInt(gasPrices.maxFeePerGas),
+        maxPriorityFeePerGas: BigInt(gasPrices.maxPriorityFeePerGas),
+      };
+    },
+  },
 });
 
 // -------------------------------------------------------------------------

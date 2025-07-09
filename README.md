@@ -89,6 +89,12 @@ pnpm run userop-gas-price-sponsored
 pnpm run userop-gas-price-native
 ```
 
+### **Comprehensive Testing Commands**
+```bash
+# Test all payment methods (estimation + sending)
+pnpm run test-all-payment-methods
+```
+
 ## 🔧 Environment Setup
 
 Create a `.env` file in the project root:
@@ -198,6 +204,37 @@ PAY_NATIVE=true
 - **Features**:
   - Supports both sponsored and native fee modes
   - Returns both maxPriorityFeePerGas and maxFeePerGas
+
+## 🧪 Comprehensive Testing
+
+### **Test All Payment Methods**
+Run a comprehensive test that checks all payment methods for both gas estimation and sending user operations:
+
+```bash
+# Test all payment methods (estimation + sending)
+pnpm run test-all-payment-methods
+```
+
+This script will:
+- ✅ Test gas estimation for all payment methods
+- ✅ Test sending user operations for all payment methods
+- ✅ Provide detailed results and statistics
+- ✅ Show success/failure status for each test
+- ✅ Display transaction hashes for successful sends
+- ✅ Give a final summary of all tests
+
+**Payment Methods Tested:**
+1. **1Balance Sponsored Gas** - Zero-fee sponsored transactions
+2. **Native Gas Payments** - Traditional ETH gas payments
+3. **OnChain Paymaster Sponsored Gas** - Sponsored via on-chain paymaster
+4. **ERC20 Gas Payments** - Token-based gas payments
+
+**Test Output Includes:**
+- Individual test results for each payment method
+- Gas estimation details (preVerificationGas, callGasLimit, verificationGasLimit)
+- UserOperation hashes for successful sends
+- Error details for failed tests
+- Final statistics showing pass/fail counts
 
 ## 🛡️ Smart Wallet Integration
 

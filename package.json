@@ -12,7 +12,8 @@
     "max-priority-fee-native": "pnpm ts-node eth_maxPriorityFeePerGas/maxPriorityFeePerGasNative.ts",
     "supported-entrypoints": "pnpm ts-node eth_supportedEntryPoints/supportedEntryPoints.ts",
     "userop-gas-price-sponsored": "pnpm ts-node eth_getUserOperationGasPrice/getUserOperationGasPriceSponsored.ts",
-    "userop-gas-price-native": "pnpm ts-node eth_getUserOperationGasPrice/getUserOperationGasPriceNative.ts"
+    "userop-gas-price-native": "pnpm ts-node eth_getUserOperationGasPrice/getUserOperationGasPriceNative.ts",
+    "test-all-payment-methods": "pnpm ts-node test-all-payment-methods.ts"
   },
   "dependencies": {
     "@circle-fin/modular-wallets-core": "^1.0.9",
