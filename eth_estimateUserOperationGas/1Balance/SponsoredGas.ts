@@ -17,9 +17,7 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { toSafeSmartAccount } from "permissionless/accounts";
 import { sepolia } from "viem/chains";
-import { generatePrivateKey } from "viem/accounts";
 
-type UserOperation = ViemUserOperation & { paymasterAndData?: `0x${string}` };
 
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
 const chain = sepolia;
@@ -33,7 +31,7 @@ if (!apiKey || !PRIVATE_KEY)
 
 /* ───────────────── 1. viem public client & signer ───────────────────── */
 const publicClient = createPublicClient({ chain, transport: http() });
-const signer = privateKeyToAccount(generatePrivateKey());
+const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
 /* ───────────────── 2. Safe account (Permissionless.js) ──────────────── */
 const account = await toSafeSmartAccount({
@@ -74,11 +72,8 @@ const rpcUserOp: any = {
       }
     : {}),
   callData: userOp.callData,
-  callGasLimit: toHex(userOp.callGasLimit),
-  verificationGasLimit: toHex(userOp.verificationGasLimit),
-  preVerificationGas: toHex(userOp.preVerificationGas),
-  maxFeePerGas: "0x0",
-  maxPriorityFeePerGas: "0x0",
+  maxFeePerGas: toHex(userOp.maxFeePerGas), // 0x0 for 1Balance
+  maxPriorityFeePerGas: toHex(userOp.maxPriorityFeePerGas), // 0x0 for 1Balance
   signature: userOp.signature, // dummy for estimation
 };
 
