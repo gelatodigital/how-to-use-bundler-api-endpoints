@@ -15,6 +15,7 @@
     "userop-gas-price-native": "pnpm ts-node eth_getUserOperationGasPrice/getUserOperationGasPriceNative.ts"
   },
   "dependencies": {
+    "@circle-fin/modular-wallets-core": "^1.0.9",
     "@gelatonetwork/smartwallet": "^0.0.16",
     "@zerodev/ecdsa-validator": "^5.4.9",
     "@zerodev/sdk": "^5.4.39",
