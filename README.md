@@ -144,7 +144,7 @@ PAY_NATIVE=true
   - `pnpm run send-userop` (Sponsored)
   - `pnpm run send-userop-native` (Native ETH)
 - **Features**: 
-  - Uses Safe smart wallet with Permissionless.js
+  - Uses Circle smart wallet with @circle-fin/modular-wallets-core
   - Sponsored version: Zero gas fees via 1Balance
   - Native version: Users pay gas fees in ETH
   - Kernel account with ECDSA validator
@@ -158,7 +158,7 @@ PAY_NATIVE=true
   - `pnpm run estimate-gas` (Sponsored)
   - `pnpm run estimate-gas-native` (Native)
 - **Features**:
-  - Safe smart wallet integration
+  - Circle smart wallet integration
   - Handles both deployed and counterfactual accounts
   - Sponsored: Zero gas cost estimation
   - Native: Real gas cost estimation
@@ -201,21 +201,15 @@ PAY_NATIVE=true
 
 ## 🛡️ Smart Wallet Integration
 
-### Safe Wallet with Permissionless.js
+### Circle Smart Account
 
-The examples use Safe smart wallets created with Permissionless.js:
+The examples use Circle smart wallets created with @circle-fin/modular-wallets-core:
 
 ```typescript
-import { toSafeSmartAccount } from 'permissionless/accounts';
+import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 
-const account = await toSafeSmartAccount({
-  client: publicClient,
-  entryPoint: { address: ENTRY_POINT, version: '0.7' },
-  owners: [signer],
-  saltNonce: 0n,
-  version: '1.4.1',
-});
-```
+const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
+
 
 ## 🔑 Key Features
 
@@ -254,14 +248,12 @@ const account = await toSafeSmartAccount({
 ## 📚 Dependencies
 
 - **viem**: Ethereum client and utilities
-- **permissionless**: Account abstraction utilities
+- **Circle**: Account abstraction utilities
 - **dotenv**: Environment variable management
-- **@zerodev/sdk**: Additional AA utilities
 
 ## 🔗 Useful Links
 
 - [Gelato Documentation](https://docs.gelato.network/)
 - [1Balance Sponsorship](https://docs.gelato.network/developer-services/1balance)
 - [ERC-4337 Specification](https://eips.ethereum.org/EIPS/eip-4337)
-- [Permissionless.js](https://permissionless.js.org/)
-- [Safe Documentation](https://docs.safe.global/) 
+- [Circle](https://developers.circle.com/w3s/programmable-wallets)

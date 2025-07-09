@@ -1,13 +1,3 @@
-/**************************************************************************
- *  Sepolia · Safe (permissionless) · eth_estimateUserOperationGas        *
- *                                                                        *
- *  .env variables                                                        *
- *  ───────────────────────────────────────────────────────────────────── *
- *  GELATO_API_KEY   1Balance sponsor key                                 *
- *  PRIVATE_KEY      Safe owner EOA (0x…)                                 *
- *  RPC_URL          HTTPS Sepolia RPC endpoint                           *
- **************************************************************************/
-
 import "dotenv/config";
 import { createPublicClient, http, zeroAddress } from "viem";
 import {
@@ -15,11 +5,10 @@ import {
   type UserOperation as ViemUserOperation,
 } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
-import { toSafeSmartAccount } from "permissionless/accounts";
+import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 import { createPaymasterClient } from "viem/account-abstraction";
 
-type UserOperation = ViemUserOperation & { paymasterAndData?: `0x${string}` };
 
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
 const chain = sepolia;
@@ -35,15 +24,9 @@ if (!PRIVATE_KEY || !PAYMASTER_URL)
 const publicClient = createPublicClient({ chain, transport: http() });
 const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
-/* ───────────────── 2. Safe account (Permissionless.js) ──────────────── */
-const account = await toSafeSmartAccount({
-  client: publicClient,
-  entryPoint: { address: ENTRY_POINT, version: "0.7" },
-  owners: [signer],
-  saltNonce: 0n,
-  version: "1.4.1",
-});
-console.log("Safe address:", account.address);
+/* ───────────────── 2. Circle account (Circle SDK) ──────────────── */
+const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
+console.log("Circle Smart Account address:", account.address);
 
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
 const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
@@ -70,20 +53,21 @@ const toHex = (n: bigint) => `0x${n.toString(16)}`;
 const rpcUserOp: any = {
   sender: userOp.sender,
   nonce: toHex(userOp.nonce),
+  ...(userOp.factory && userOp.factory !== "0x"
+    ? {
+        factory: userOp.factory,
+        factoryData: userOp.factoryData ?? "0x",
+      }
+    : {}),
   callData: userOp.callData,
   signature: userOp.signature,
   paymaster: userOp.paymaster,
   paymasterData: userOp.paymasterData,
-  paymasterPostOpGasLimit: toHex(userOp.paymasterPostOpGasLimit ?? 0n),
-  paymasterVerificationGasLimit: toHex(userOp.paymasterVerificationGasLimit ?? 0n),
   maxFeePerGas: toHex(userOp.maxFeePerGas),
   maxPriorityFeePerGas: toHex(userOp.maxPriorityFeePerGas),
 };
 
-if (userOp.factory && userOp.factory !== "0x") {
-  rpcUserOp.factory = userOp.factory;
-  rpcUserOp.factoryData = userOp.factoryData ?? "0x";
-}
+console.log("\nPrepared UserOperation", rpcUserOp);
 
 /* ───────────────── 6. Call eth_estimateUserOperationGas ────────────── */
 console.log("\n➡️  Requesting gas estimation …");

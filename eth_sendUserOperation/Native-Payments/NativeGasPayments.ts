@@ -5,109 +5,90 @@ import {
   type UserOperation as ViemUserOperation,
 } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
-import { toSafeSmartAccount } from "permissionless/accounts";
+import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032";
 const chain = sepolia;
-const RPC_URL = process.env.RPC_URL!;
+const chainID = chain.id;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
-if (!RPC_URL || !PRIVATE_KEY) {
-  throw new Error("Missing RPC_URL or PRIVATE_KEY in .env");
+if (!PRIVATE_KEY) {
+  throw new Error("Missing PRIVATE_KEY in .env");
 }
 
 // 1) Public client & signer
-const publicClient = createPublicClient({ chain, transport: http(RPC_URL) });
+const publicClient = createPublicClient({ chain, transport: http() });
 const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
-// 2) Build your Safe-style AA account
-const account = await toSafeSmartAccount({
-  client: publicClient,
-  entryPoint: { address: ENTRY_POINT, version: "0.7" },
-  owners: [signer],
-  saltNonce: 0n,
-  version: "1.4.1",
-});
+// 2) Build your Circle-style AA account
+const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
+console.log("Circle Smart Account address:", account.address);
 
 // 3) “Bundler” = your node’s eth_sendUserOperation
 const bundlerClient = createBundlerClient({
   client: publicClient,
-  transport: http(RPC_URL),
+  transport: http(
+    `https://api.gelato.digital/bundlers/${chainID}/rpc`
+  ),
 });
 
-// 4) Prepare & sign with real gas values
-let userOp = await bundlerClient.prepareUserOperation({
+// ─── 4. Build & sign the (sponsored) UserOperation ──────────────────────
+let userOperation = await bundlerClient.prepareUserOperation({
   account,
   calls: [{ to: account.address, value: 0n, data: "0x" }],
 });
 
-const signature = await account.signUserOperation(userOp);
-userOp.signature = signature;
+const signature = await account.signUserOperation(userOperation);
+userOperation.signature = signature;
 
 const toHex = (n: bigint) => `0x${n.toString(16)}`;
-// 5) Serialize fields to hex-strings
-const payload = {
-  sender: userOp.sender,
-  nonce: toHex(userOp.nonce),
-  ...(userOp.factory && userOp.factory !== "0x"
+
+// ─── 5. Shape payload per Gelato’s v0.7 spec ────────────────────────────
+const userOpForSubmission = {
+  sender: userOperation.sender,
+  nonce: toHex(userOperation.nonce),
+  ...(userOperation.factory && userOperation.factory !== "0x"
     ? {
-        factory: userOp.factory,
-        factoryData: userOp.factoryData || "0x",
+        factory: userOperation.factory,
+        factoryData: userOperation.factoryData || "0x",
       }
     : {}),
-  callData: userOp.callData,
-  callGasLimit: toHex(userOp.callGasLimit),
-  verificationGasLimit: toHex(userOp.verificationGasLimit),
-  preVerificationGas: toHex(userOp.preVerificationGas),
-  maxFeePerGas: toHex(userOp.maxFeePerGas),
-  maxPriorityFeePerGas: toHex(userOp.maxPriorityFeePerGas),
-  signature: userOp.signature,
+  callData: userOperation.callData,
+  callGasLimit: toHex(userOperation.callGasLimit),
+  verificationGasLimit: toHex(userOperation.verificationGasLimit),
+  preVerificationGas: toHex(userOperation.preVerificationGas),
+  maxFeePerGas: toHex(userOperation.maxFeePerGas),
+  maxPriorityFeePerGas: toHex(userOperation.maxPriorityFeePerGas),
+  signature: userOperation.signature,
 };
 
-console.log("Prepared UserOperation", payload);
+console.log("Prepared UserOperation", userOpForSubmission);
 
-// 6) Submit via eth_sendUserOperation
-console.log("⏳ Submitting UserOperation…");
-const submitRes = await fetch(RPC_URL, {
+// ─── 6. Send with fetch (raw eth_sendUserOperation) ─────────────────────
+const submitOptions = {
   method: "POST",
-  headers: { "Content-Type": "application/json" },
+  headers: { "content-type": "application/json" },
   body: JSON.stringify({
     id: 1,
     jsonrpc: "2.0",
     method: "eth_sendUserOperation",
-    params: [payload, ENTRY_POINT],
+    params: [userOpForSubmission, ENTRY_POINT],
   }),
-}).then((r) => r.json());
+};
 
-if (!submitRes.result) {
-  console.error("❌ Submission failed:", submitRes.error || submitRes);
+console.log("\nSubmitting UserOperation to Gelato …");
+const res = await fetch(
+  `https://api.gelato.digital/bundlers/${chainID}/rpc`,
+  submitOptions
+).then((r) => r.json());
+
+if (res.result) {
+  console.log("✅  userOpHash:", res.result);
+  console.log(
+    `🔎  Track: https://api.gelato.digital/tasks/status/${res.result}`
+  );
+} else {
+  console.error("❌  Error from Gelato:", res.error || res);
   process.exit(1);
-}
-
-const userOpHash = submitRes.result;
-console.log("✅ userOpHash:", userOpHash);
-
-// 7) Poll for inclusion via eth_getUserOperationReceipt
-console.log("⏳ Waiting for UserOperationReceipt…");
-let receipt: any = null;
-while (receipt === null) {
-  const statusRes = await fetch(RPC_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      id: 2,
-      jsonrpc: "2.0",
-      method: "eth_getUserOperationReceipt",
-      params: [userOpHash],
-    }),
-  }).then((r) => r.json());
-
-  receipt = statusRes.result;
-  if (receipt === null) {
-    console.log("…still pending, retrying in 5 s");
-    await new Promise((r) => setTimeout(r, 5000));
-  } else {
-    console.log("✅ Mined UserOperationReceipt:", receipt);
-  }
 }

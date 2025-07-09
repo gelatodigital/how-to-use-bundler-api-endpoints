@@ -5,7 +5,7 @@ import {
   type UserOperation as ViemUserOperation,
 } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
-import { sepolia } from "viem/chains";
+import { baseSepolia } from "viem/chains";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { signPermit } from "./signPermit.ts";
 
@@ -19,8 +19,8 @@ type EthGetUserOperationGasPriceRpc = {
   Parameters: [];
 };
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
-const chain = sepolia;
-const chainID = chain.id; // 11155111
+const chain = baseSepolia;
+const chainID = chain.id; // 84532
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
@@ -28,10 +28,10 @@ const PAYMASTER_ADDRESS = "0x31BE08D380A21fc740883c0BC434FcFc88740b58";
 
 
 /* ───────────────── 1. viem public client & signer ───────────────────── */
-const publicClient = createPublicClient({ chain, transport: http() });
 const client = createPublicClient({ chain, transport: http() });
 const owner = privateKeyToAccount(PRIVATE_KEY as any);
 const account = await toCircleSmartAccount({ client, owner });
+console.log("Circle Smart Account address:", account.address);
 
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
 const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
@@ -65,7 +65,7 @@ const paymaster = {
 
 const bundlerClient = createBundlerClient({
   account,
-  client: publicClient,
+  client,
   paymaster: paymaster as any,
   paymasterContext: {
     token: USDC_ADDRESS, // Setting ERC-20 token for gas fees
@@ -93,8 +93,6 @@ let userOp = await bundlerClient.prepareUserOperation({
   calls: [{ to: zeroAddress, value: 0n, data: "0x" }],
 });
 
-console.log("userOp", userOp);
-
 /* ───────────────── 5. Shape payload for v0.7 RPC spec ──────────────── */
 const toHex = (n: bigint) => `0x${n.toString(16)}`;
 
@@ -112,9 +110,7 @@ const rpcUserOp: any = {
   maxFeePerGas: toHex(userOp.maxFeePerGas),
   maxPriorityFeePerGas: toHex(userOp.maxPriorityFeePerGas),
   paymaster: userOp.paymaster,
-  paymasterData: userOp.paymasterData,
-  paymasterVerificationGasLimit: toHex(userOp.paymasterVerificationGasLimit),
-  paymasterPostOpGasLimit: toHex(userOp.paymasterPostOpGasLimit),
+  paymasterData: userOp.paymasterData
 };
 
 console.log("\nPrepared UserOperation", rpcUserOp);

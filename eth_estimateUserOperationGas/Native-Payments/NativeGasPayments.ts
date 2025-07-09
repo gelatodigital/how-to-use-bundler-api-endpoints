@@ -1,12 +1,3 @@
-/**************************************************************************
- *  Sepolia · Safe (self‑funded native ETH) · eth_estimateUserOperationGas *
- *                                                                          *
- *  .env variables                                                          *
- *  ─────────────────────────────────────────────────────────────────────── *
- *  PRIVATE_KEY    Safe owner EOA (0x…)                                     *
- *  RPC_URL        HTTPS Sepolia RPC endpoint                               *
- **************************************************************************/
-
 import "dotenv/config";
 import { createPublicClient, http } from "viem";
 import {
@@ -14,18 +5,10 @@ import {
   type UserOperation as ViemUserOperation,
 } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
-import { toSafeSmartAccount } from "permissionless/accounts";
+import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 
-// -------------------------------------------------------------------------
-// Types
-// -------------------------------------------------------------------------
-
 type UserOperation = ViemUserOperation;
-
-// -------------------------------------------------------------------------
-// Constants & ENV
-// -------------------------------------------------------------------------
 
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
 const chain = sepolia;
@@ -34,7 +17,7 @@ const chainID = chain.id; // 11155111
 const PRIVATE_KEY = process.env.PRIVATE_KEY ?? "";
 
 if (!PRIVATE_KEY)
-  throw new Error("Set RPC_URL & PRIVATE_KEY in .env");
+  throw new Error("Set PRIVATE_KEY in .env");
 
 // -------------------------------------------------------------------------
 // 1. viem public client & signer
@@ -44,17 +27,11 @@ const publicClient = createPublicClient({ chain, transport: http() });
 const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
 // -------------------------------------------------------------------------
-// 2. Safe smart account (permissionless.js wrapper)
+// 2. Circle smart account (Circle SDK)
 // -------------------------------------------------------------------------
 
-const account = await toSafeSmartAccount({
-  client: publicClient,
-  entryPoint: { address: ENTRY_POINT, version: "0.7" },
-  owners: [signer],
-  saltNonce: 0n,
-  version: "1.4.1",
-});
-console.log("Safe address:", account.address);
+const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
+console.log("Circle Smart Account address:", account.address);
 
 // -------------------------------------------------------------------------
 // 3. Bundler client (helpers only)

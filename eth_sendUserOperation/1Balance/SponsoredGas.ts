@@ -6,7 +6,7 @@ import {
   type UserOperation as ViemUserOperation,
 } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
-import { toSafeSmartAccount } from "permissionless/accounts";
+import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032";
@@ -23,14 +23,9 @@ if (!apiKey || !PRIVATE_KEY) {
 const publicClient = createPublicClient({ chain, transport: http() });
 const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
-// ─── 2. Safe smart account (Permissionless.js) ──────────────────────────
-const account = await toSafeSmartAccount({
-  client: publicClient,
-  entryPoint: { address: ENTRY_POINT, version: "0.7" },
-  owners: [signer],
-  saltNonce: 0n,
-  version: "1.4.1",
-});
+// ─── 2. Circle smart account (Circle SDK) ──────────────────────────
+const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
+console.log("Circle Smart Account address:", account.address);
 
 // ─── 3. Gelato bundler client ───────────────────────────────────────────
 const bundlerClient = createBundlerClient({
