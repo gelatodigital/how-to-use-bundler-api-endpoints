@@ -9,7 +9,6 @@ import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
 import { createPaymasterClient } from "viem/account-abstraction";
 
-
 const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
 const chain = sepolia;
 const chainID = chain.id; // 11155111

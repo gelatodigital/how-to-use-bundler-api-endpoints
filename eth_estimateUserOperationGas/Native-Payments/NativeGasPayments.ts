@@ -29,24 +29,15 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY ?? "";
 if (!PRIVATE_KEY)
   throw new Error("Set PRIVATE_KEY in .env");
 
-// -------------------------------------------------------------------------
-// 1. viem public client & signer
-// -------------------------------------------------------------------------
-
+/* ───────────────── 1. viem public client & signer ───────────────────── */
 const publicClient = createPublicClient({ chain, transport: http() });
 const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
-// -------------------------------------------------------------------------
-// 2. Circle smart account (Circle SDK)
-// -------------------------------------------------------------------------
-
+/* ───────────────── 2. Circle smart account (Circle SDK) ──────────────── */
 const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
 console.log("Circle Smart Account address:", account.address);
 
-// -------------------------------------------------------------------------
-// 3. Bundler client (helpers only)
-// -------------------------------------------------------------------------
-
+/* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
 const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
 
 const bundlerClient = createBundlerClient({
@@ -67,20 +58,14 @@ const bundlerClient = createBundlerClient({
   },
 });
 
-// -------------------------------------------------------------------------
-// 4. Prepare blank-fee UserOperation (self‑funded)
-// -------------------------------------------------------------------------
-
+/* ───────────────── 4. Prepare blank-fee UserOperation (self‑funded) ──── */
 let userOp: UserOperation = await bundlerClient.prepareUserOperation({
   account,
   calls: [{ to: account.address, value: 0n, data: "0x" }], 
 });
 
 
-// -------------------------------------------------------------------------
-// 5. Shape payload for v0.7 RPC spec
-// -------------------------------------------------------------------------
-
+/* ───────────────── 5. Shape payload for v0.7 RPC spec ────────────────── */
 const toHex = (n: bigint) => `0x${n.toString(16)}` as const;
 
 const rpcUserOp: any = {
@@ -100,10 +85,7 @@ const rpcUserOp: any = {
 
 console.log("\nPrepared UserOperation", rpcUserOp);
 
-// -------------------------------------------------------------------------
-// 6. Call eth_estimateUserOperationGas
-// -------------------------------------------------------------------------
-
+/* ───────────────── 6. Call eth_estimateUserOperationGas ────────────── */
 console.log("\n➡️  Requesting gas estimation …");
 const res = await fetch(bundlerUrl, {
   method: "POST",

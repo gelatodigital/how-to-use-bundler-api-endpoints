@@ -30,12 +30,13 @@ const PAYMASTER_ADDRESS = "0x31BE08D380A21fc740883c0BC434FcFc88740b58";
 /* ───────────────── 1. viem public client & signer ───────────────────── */
 const client = createPublicClient({ chain, transport: http() });
 const owner = privateKeyToAccount(PRIVATE_KEY as any);
+
+/* ───────────────── 2. Circle smart account (Circle SDK) ──────────────── */
 const account = await toCircleSmartAccount({ client, owner });
 console.log("Circle Smart Account address:", account.address);
 
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
 const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
-
 
 const paymaster = {
   async getPaymasterData(parameters) {

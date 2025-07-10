@@ -2,7 +2,6 @@ import "dotenv/config";
 import { createPublicClient, http } from "viem";
 import {
   createBundlerClient,
-  type UserOperation as ViemUserOperation,
 } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
@@ -26,7 +25,7 @@ const apiKey = process.env.GELATO_API_KEY!;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
 if (!apiKey || !PRIVATE_KEY)
-  throw new Error("Set GELATO_API_KEY, RPC_URL & PRIVATE_KEY in .env");
+  throw new Error("Set GELATO_API_KEY & PRIVATE_KEY in .env");
 
 /* ───────────────── 1. viem public client & signer ───────────────────── */
 const publicClient = createPublicClient({ chain, transport: http() });
@@ -65,7 +64,7 @@ let userOp = await bundlerClient.prepareUserOperation({
   maxPriorityFeePerGas: 0n,
 });
 
-/* ───────────────── 5. Shape payload for v0.7 RPC spec ──────────────── */
+/* ───────────────── 5. Shape payload for v0.7 Entrypoint spec ──────────────── */
 const toHex = (n: bigint) => `0x${n.toString(16)}`;
 
 const rpcUserOp: any = {

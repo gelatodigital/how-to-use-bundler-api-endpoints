@@ -5,7 +5,7 @@ A comprehensive collection of scripts to interact with Gelato's Account Abstract
 ## 🎯 Overview
 
 This project provides TypeScript examples for all major Gelato bundler API endpoints, showing how to:
-- Send UserOperations with different gas payment models (Sponsored, Native ETH)
+- Send UserOperations with different gas payment models (1Balance Sponsored, Native ETH, OnChain Paymaster, ERC-20)
 - Estimate gas costs for various payment modes
 - Query operation status and receipts
 - Get gas prices and supported entry points
@@ -18,23 +18,33 @@ bundler-api-interaction/
 ├── eth_chainId/                           # Chain ID verification
 │   └── checkBundlerChainId.ts
 ├── eth_sendUserOperation/                 # Send UserOperations
-│   ├── sendUserOp1Balance.ts             # Sponsored (1Balance)
-│   └── sendUserOpNative.ts               # Native ETH payment
+│   ├── 1Balance/
+│   │   └── SponsoredGas.ts               # 1Balance sponsored gas
+│   ├── Native-Payments/
+│   │   └── NativeGasPayments.ts         # Native ETH payment
+│   └── OnChain-Paymasters/
+│       ├── SponsoredGas.ts               # OnChain paymaster sponsored
+│       ├── Erc20GasPayments.ts          # ERC-20 token payment
+│       └── signPermit.ts                 # Permit signing utilities
 ├── eth_estimateUserOperationGas/          # Gas estimation
-│   ├── estimateUserOperationGas.ts       # Sponsored gas estimation
-│   └── estimateUserOperationGasNative.ts # Native gas estimation
+│   ├── 1Balance/
+│   │   └── SponsoredGas.ts              # 1Balance gas estimation
+│   ├── Native-Payments/
+│   │   └── NativeGasPayments.ts         # Native gas estimation
+│   └── OnChain-Paymasters/
+│       ├── SponsoredGas.ts              # OnChain paymaster estimation
+│       ├── Erc20GasPayments.ts          # ERC-20 gas estimation
+│       └── signPermit.ts                 # Permit signing utilities
 ├── eth_getUserOperationByHash/            # Query by hash
 │   └── getUserOperationByHash.ts
 ├── eth_getUserOperationReceipt/           # Get receipts
 │   └── getUserOperationReceipt.ts
 ├── eth_maxPriorityFeePerGas/              # Priority fee info
-│   ├── maxPriorityFeePerGasSponsored.ts  # Sponsored mode
-│   └── maxPriorityFeePerGasNative.ts     # Native mode
+│   └── maxPriorityFeePerGas.ts
 ├── eth_supportedEntryPoints/              # Supported entry points
 │   └── supportedEntryPoints.ts
 ├── eth_getUserOperationGasPrice/          # Gas price info
-│   ├── getUserOperationGasPriceSponsored.ts # Sponsored mode
-│   └── getUserOperationGasPriceNative.ts    # Native mode
+│   └── getUserOperationGasPrice.ts
 ├── package.json
 └── README.md
 ```
@@ -52,11 +62,17 @@ pnpm run supported-entrypoints
 
 ### **UserOperation Commands**
 ```bash
-# Send UserOperation (sponsored by 1Balance)
-pnpm run send-userop
+# Send UserOperation (1Balance sponsored)
+pnpm run send-userop-1balance
 
 # Send UserOperation (native ETH payment)
 pnpm run send-userop-native
+
+# Send UserOperation (onchain paymaster sponsored)
+pnpm run send-userop-onchain-sponsored
+
+# Send UserOperation (ERC-20 token payment)
+pnpm run send-userop-erc20
 
 # Get UserOperation by hash
 HASH=0xabc123... pnpm run get-userop
@@ -67,32 +83,26 @@ HASH=0xabc123... pnpm run get-receipt
 
 ### **Gas Estimation Commands**
 ```bash
-# Estimate gas costs (sponsored)
-pnpm run estimate-gas
+# Estimate gas costs (1Balance sponsored)
+pnpm run estimate-gas-1balance
 
 # Estimate gas costs (native ETH)
 pnpm run estimate-gas-native
+
+# Estimate gas costs (onchain paymaster sponsored)
+pnpm run estimate-gas-onchain-sponsored
+
+# Estimate gas costs (ERC-20 token)
+pnpm run estimate-gas-erc20
 ```
 
 ### **Gas Price Commands**
 ```bash
-# Get max priority fee (sponsored)
-pnpm run max-priority-fee-sponsored
+# Get max priority fee
+pnpm run max-priority-fee
 
-# Get max priority fee (native)
-pnpm run max-priority-fee-native
-
-# Get UserOperation gas price (sponsored)
-pnpm run userop-gas-price-sponsored
-
-# Get UserOperation gas price (native)
-pnpm run userop-gas-price-native
-```
-
-### **Comprehensive Testing Commands**
-```bash
-# Test all payment methods (estimation + sending)
-pnpm run test-all-payment-methods
+# Get UserOperation gas price
+pnpm run userop-gas-price
 ```
 
 ## 🔧 Environment Setup
@@ -102,139 +112,39 @@ Create a `.env` file in the project root:
 ```env
 # Required for most operations
 PRIVATE_KEY=0x...                    # Your private key
-RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
 
 # Gelato API keys (for sponsored transactions)
 GELATO_API_KEY=your_gelato_api_key
 
-# Optional: Chain configuration
-CHAIN_ID=11155111                    # Default: Ethereum Sepolia
-
-# For native fee mode (when not using sponsorship)
-PAY_NATIVE=true
+PAYMASTER_URL= your_paymaster_url
 ```
 
 ## 📋 Gas Payment Models
 
-### **1. Sponsored Transactions (1Balance)**
+### **1. 1Balance Sponsored Transactions**
 - **Cost**: $0 gas fees for users
 - **Requirements**: `GELATO_API_KEY`
 - **Use Cases**: User-friendly dApps, quick prototyping
-- **Scripts**: `send-userop`, `estimate-gas`, `max-priority-fee-sponsored`, `userop-gas-price-sponsored`
+- **Scripts**: `send-userop-1balance`, `estimate-gas-1balance`
 
 ### **2. Native ETH Payment**
 - **Cost**: Users pay gas fees in ETH
 - **Requirements**: No API key needed
 - **Use Cases**: Traditional gas payment, no sponsorship available
-- **Scripts**: `send-userop-native`, `estimate-gas-native`, `max-priority-fee-native`, `userop-gas-price-native`
+- **Scripts**: `send-userop-native`, `estimate-gas-native`
 
-### **3. ERC-20 Token Payment**
+### **3. OnChain Paymaster Sponsored**
+- **Cost**: Sponsored via on-chain paymaster contract
+- **Requirements**: Paymaster contract deployment
+- **Use Cases**: Custom sponsorship logic, on-chain verification
+- **Scripts**: `send-userop-onchain-sponsored`, `estimate-gas-onchain-sponsored`
+
+### **4. ERC-20 Token Payment**
 - **Cost**: Users pay with ERC-20 tokens
-- **Requirements**: Custom paymaster contract
+- **Requirements**: ERC-20 token contract, permit support
 - **Use Cases**: Token-gated services, custom payment logic
-- **Scripts**: Custom implementation needed
+- **Scripts**: `send-userop-erc20`, `estimate-gas-erc20`
 
-## 📋 API Endpoints Covered
-
-### **1. **eth_chainId** - Chain Verification**
-- **Purpose**: Verify the chain ID that the bundler is serving
-- **Script**: `eth_chainId/checkBundlerChainId.ts`
-- **Command**: `pnpm run check-chain`
-
-### **2. **eth_sendUserOperation** - Send UserOperations**
-- **Purpose**: Submit UserOperations to the bundler for processing
-- **Scripts**: 
-  - `eth_sendUserOperation/sendUserOp1Balance.ts` (Sponsored)
-  - `eth_sendUserOperation/sendUserOpNative.ts` (Native ETH)
-- **Commands**: 
-  - `pnpm run send-userop` (Sponsored)
-  - `pnpm run send-userop-native` (Native ETH)
-- **Features**: 
-  - Uses Circle smart wallet with @circle-fin/modular-wallets-core
-  - Sponsored version: Zero gas fees via 1Balance
-  - Native version: Users pay gas fees in ETH
-  - Kernel account with ECDSA validator
-
-### **3. **eth_estimateUserOperationGas** - Gas Estimation**
-- **Purpose**: Estimate gas costs for UserOperations before sending
-- **Scripts**:
-  - `eth_estimateUserOperationGas/estimateUserOperationGas.ts` (Sponsored)
-  - `eth_estimateUserOperationGas/estimateUserOperationGasNative.ts` (Native)
-- **Commands**:
-  - `pnpm run estimate-gas` (Sponsored)
-  - `pnpm run estimate-gas-native` (Native)
-- **Features**:
-  - Circle smart wallet integration
-  - Handles both deployed and counterfactual accounts
-  - Sponsored: Zero gas cost estimation
-  - Native: Real gas cost estimation
-
-### **4. **eth_getUserOperationByHash** - Query by Hash**
-- **Purpose**: Retrieve UserOperation details by its hash
-- **Script**: `eth_getUserOperationByHash/getUserOperationByHash.ts`
-- **Command**: `HASH=0xabc123... pnpm run get-userop`
-
-### **5. **eth_getUserOperationReceipt** - Get Receipts**
-- **Purpose**: Get transaction receipt for completed UserOperations
-- **Script**: `eth_getUserOperationReceipt/getUserOperationReceipt.ts`
-- **Command**: `HASH=0xabc123... pnpm run get-receipt`
-
-### **6. **eth_maxPriorityFeePerGas** - Priority Fee Info**
-- **Purpose**: Get current max priority fee per gas
-- **Scripts**:
-  - `eth_maxPriorityFeePerGas/maxPriorityFeePerGasSponsored.ts` (Sponsored)
-  - `eth_maxPriorityFeePerGas/maxPriorityFeePerGasNative.ts` (Native)
-- **Commands**:
-  - `pnpm run max-priority-fee-sponsored` (Sponsored)
-  - `pnpm run max-priority-fee-native` (Native)
-
-### **7. **eth_supportedEntryPoints** - Entry Point Support**
-- **Purpose**: List supported entry point contracts
-- **Script**: `eth_supportedEntryPoints/supportedEntryPoints.ts`
-- **Command**: `pnpm run supported-entrypoints`
-
-### **8. **eth_getUserOperationGasPrice** - Gas Price Info**
-- **Purpose**: Get recommended gas prices for UserOperations
-- **Scripts**:
-  - `eth_getUserOperationGasPrice/getUserOperationGasPriceSponsored.ts` (Sponsored)
-  - `eth_getUserOperationGasPrice/getUserOperationGasPriceNative.ts` (Native)
-- **Commands**:
-  - `pnpm run userop-gas-price-sponsored` (Sponsored)
-  - `pnpm run userop-gas-price-native` (Native)
-- **Features**:
-  - Supports both sponsored and native fee modes
-  - Returns both maxPriorityFeePerGas and maxFeePerGas
-
-## 🧪 Comprehensive Testing
-
-### **Test All Payment Methods**
-Run a comprehensive test that checks all payment methods for both gas estimation and sending user operations:
-
-```bash
-# Test all payment methods (estimation + sending)
-pnpm run test-all-payment-methods
-```
-
-This script will:
-- ✅ Test gas estimation for all payment methods
-- ✅ Test sending user operations for all payment methods
-- ✅ Provide detailed results and statistics
-- ✅ Show success/failure status for each test
-- ✅ Display transaction hashes for successful sends
-- ✅ Give a final summary of all tests
-
-**Payment Methods Tested:**
-1. **1Balance Sponsored Gas** - Zero-fee sponsored transactions
-2. **Native Gas Payments** - Traditional ETH gas payments
-3. **OnChain Paymaster Sponsored Gas** - Sponsored via on-chain paymaster
-4. **ERC20 Gas Payments** - Token-based gas payments
-
-**Test Output Includes:**
-- Individual test results for each payment method
-- Gas estimation details (preVerificationGas, callGasLimit, verificationGasLimit)
-- UserOperation hashes for successful sends
-- Error details for failed tests
-- Final statistics showing pass/fail counts
 
 ## 🛡️ Smart Wallet Integration
 
@@ -246,16 +156,16 @@ The examples use Circle smart wallets created with @circle-fin/modular-wallets-c
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 
 const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
-
+```
 
 ## 🔑 Key Features
 
-- **Multiple Gas Payment Models**: Sponsored, Native ETH, and ERC-20 token payment options
+- **Multiple Gas Payment Models**: 1Balance Sponsored, Native ETH, OnChain Paymaster, and ERC-20 token payment options
 - **TypeScript**: Full type safety and IntelliSense support
 - **Error Handling**: Comprehensive error handling and user feedback
 - **Gas Optimization**: Automatic gas estimation and optimization
 - **Multi-Chain Support**: Configurable for different networks (default: Ethereum Sepolia)
-- **Flexible API**: Choose between sponsored and native modes based on your needs
+- **Flexible API**: Choose between different payment models based on your needs
 
 ## 🚀 Getting Started
 
@@ -275,8 +185,8 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
    # Check if bundler is working
    pnpm run check-chain
    
-   # Send a sponsored UserOperation (requires API key)
-   pnpm run send-userop
+   # Send a 1Balance sponsored UserOperation (requires API key)
+   pnpm run send-userop-1balance
    
    # Send a native ETH UserOperation (no API key needed)
    pnpm run send-userop-native
@@ -285,7 +195,8 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
 ## 📚 Dependencies
 
 - **viem**: Ethereum client and utilities
-- **Circle**: Account abstraction utilities
+- **@circle-fin/modular-wallets-core**: Account abstraction utilities
+- **@gelatonetwork/smartwallet**: Smart wallet integration
 - **dotenv**: Environment variable management
 
 ## 🔗 Useful Links

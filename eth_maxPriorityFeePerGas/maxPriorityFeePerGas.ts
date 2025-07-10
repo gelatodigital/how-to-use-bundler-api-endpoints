@@ -1,18 +1,20 @@
 import 'dotenv/config';
 
-const chainId = process.env.CHAIN_ID ?? '11155111';
+const chainId = process.env.CHAIN_ID ?? '11155111'; // Sepolia default
 
+// Note : for native and erc20 payments remove the sponsorApiKey from the url.
 const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc`;
 
 const body = {
   id: 1,
   jsonrpc: '2.0',
-  method: 'eth_supportedEntryPoints',
+  method: 'eth_maxPriorityFeePerGas',
   params: [],
 };
 
 (async () => {
-  console.log('➡️  Requesting supported entry points …');
+  console.log('➡️  Requesting maxPriorityFee (Sponsored Mode)…');
+  
   const res = await fetch(bundlerUrl, {
     method : 'POST',
     headers: { 'content-type': 'application/json' },
@@ -20,7 +22,9 @@ const body = {
   }).then(r => r.json());
 
   if (res.result) {
-    console.log('✅  Supported entry points:', res.result);
+    const gwei = parseInt(res.result, 16) / 1e9;
+    console.log(`✅  maxPriorityFeePerGas: ${res.result}  (~${gwei} gwei)`);
+    console.log('💰 Mode: Sponsored (1Balance)');
   } else {
     console.error('❌  Gelato error:\n', res.error || res);
     process.exit(1);

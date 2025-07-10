@@ -1,8 +1,6 @@
 import "dotenv/config";
 import { createPublicClient, http, zeroAddress } from "viem";
-import {
-  createBundlerClient,
-} from "viem/account-abstraction";
+import { createBundlerClient } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";

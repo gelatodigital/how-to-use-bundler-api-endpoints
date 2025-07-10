@@ -6,10 +6,7 @@ import {
   http,
   zeroAddress,
 } from "viem";
-import {
-  createBundlerClient,
-  type UserOperation as ViemUserOperation,
-} from "viem/account-abstraction";
+import { createBundlerClient } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
@@ -34,13 +31,14 @@ const PAYMASTER_ADDRESS = "0x31BE08D380A21fc740883c0BC434FcFc88740b58";
 
 /* ───────────────── 1. viem public client & signer ───────────────────── */
 const publicClient = createPublicClient({ chain, transport: http() });
-const client = createPublicClient({ chain, transport: http() });
 const owner = privateKeyToAccount(PRIVATE_KEY as any);
-const account = await toCircleSmartAccount({ client, owner });
+
+/* ───────────────── 2. Circle smart account (Circle SDK) ──────────────── */
+const account = await toCircleSmartAccount({ client: publicClient, owner });
 console.log("Circle Smart Account address:", account.address);
 
-  /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
-  const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
+/* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
 
 const paymaster = {
   async getPaymasterData(parameters) {
@@ -48,7 +46,7 @@ const paymaster = {
     const permitSignature = await signPermit({
       tokenAddress: USDC_ADDRESS,
       account,
-      client,
+      client: publicClient,
       spenderAddress: PAYMASTER_ADDRESS,
       permitAmount: permitAmount,
     });
@@ -138,7 +136,6 @@ const submitOptions = {
     params: [rpcUserOp, ENTRY_POINT],
   }),
 };
-
 
 console.log("\nSubmitting UserOperation to Gelato …");
 const res = await fetch(

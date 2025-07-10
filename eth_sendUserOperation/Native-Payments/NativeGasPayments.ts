@@ -1,9 +1,6 @@
 import "dotenv/config";
 import { createPublicClient, http } from "viem";
-import {
-  createBundlerClient,
-  type UserOperation as ViemUserOperation,
-} from "viem/account-abstraction";
+import { createBundlerClient } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
@@ -26,15 +23,15 @@ if (!PRIVATE_KEY) {
   throw new Error("Missing PRIVATE_KEY in .env");
 }
 
-// 1) Public client & signer
+/* ───────────────── 1. viem public client & signer ───────────────────── */
 const publicClient = createPublicClient({ chain, transport: http() });
 const signer = privateKeyToAccount(PRIVATE_KEY as any);
 
-// 2) Build your Circle-style AA account
+/* ───────────────── 2. Circle smart account (Circle SDK) ──────────────── */
 const account = await toCircleSmartAccount({ client: publicClient, owner: signer });
 console.log("Circle Smart Account address:", account.address);
 
-// 3) “Bundler” = your node’s eth_sendUserOperation
+/* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
 const bundlerClient = createBundlerClient({
   client: publicClient,
   transport: http(`https://api.gelato.digital/bundlers/${chainID}/rpc`),
@@ -53,7 +50,7 @@ const bundlerClient = createBundlerClient({
   },
 });
 
-// ─── 4. Build & sign the (sponsored) UserOperation ──────────────────────
+/* ───────────────── 4. Build & sign the (sponsored) UserOperation ────── */
 let userOperation = await bundlerClient.prepareUserOperation({
   account,
   calls: [{ to: account.address, value: 0n, data: "0x" }],
@@ -65,7 +62,7 @@ userOperation.signature = signature;
 
 const toHex = (n: bigint) => `0x${n.toString(16)}`;
 
-// ─── 5. Shape payload per Gelato’s v0.7 spec ────────────────────────────
+/* ───────────────── 5. Shape payload per Gelato’s v0.7 spec ──────────── */
 const userOpForSubmission = {
   sender: userOperation.sender,
   nonce: toHex(userOperation.nonce),
@@ -86,7 +83,7 @@ const userOpForSubmission = {
 
 console.log("Prepared UserOperation", userOpForSubmission);
 
-// ─── 6. Send with fetch (raw eth_sendUserOperation) ─────────────────────
+/* ───────────────── 6. Send with fetch (raw eth_sendUserOperation) ────── */
 const submitOptions = {
   method: "POST",
   headers: { "content-type": "application/json" },

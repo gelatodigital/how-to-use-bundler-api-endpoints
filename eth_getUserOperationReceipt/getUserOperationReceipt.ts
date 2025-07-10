@@ -1,16 +1,11 @@
 import 'dotenv/config';
 
-const apiKey  = process.env.GELATO_API_KEY!;
 const chainId = process.env.CHAIN_ID ?? '11155111';
-const hash    = process.env.HASH;
-
-if (!apiKey) throw new Error('Missing GELATO_API_KEY in .env');
-if (!hash)   throw new Error('Provide HASH env var (userOpHash to query)');
-
+const hash    = "your-user-operation-hash";
 //ex. HASH=0x1614d689246cabfa884d069bcbde473b1987243e0fe735eecc4fd6aeca6e04bc
 
 const bundlerUrl =
-  `https://api.gelato.digital/bundlers/${chainId}/rpc?sponsorApiKey=${apiKey}`;
+  `https://api.gelato.digital/bundlers/${chainId}/rpc`;
 
 const body = {
   id: 1,

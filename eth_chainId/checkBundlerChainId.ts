@@ -2,12 +2,9 @@ import 'dotenv/config';
 
 async function main() {
   const CHAIN_ID = process.env.CHAIN_ID ?? '84532';
-  const API_KEY  = process.env.GELATO_API_KEY;
-
-  if (!API_KEY) throw new Error('Missing SPONSOR_API_KEY in .env');
 
   const bundlerUrl =
-    `https://api.gelato.digital/bundlers/${CHAIN_ID}/rpc?sponsorApiKey=${API_KEY}`;
+    `https://api.gelato.digital/bundlers/${CHAIN_ID}/rpc`;
 
   // JSON-RPC 2.0 body
   const payload = {

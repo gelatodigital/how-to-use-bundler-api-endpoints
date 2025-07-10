@@ -1,10 +1,7 @@
 import "dotenv/config";
 
 import { createPublicClient, http } from "viem";
-import {
-  createBundlerClient,
-  type UserOperation as ViemUserOperation,
-} from "viem/account-abstraction";
+import { createBundlerClient } from "viem/account-abstraction";
 import { privateKeyToAccount } from "viem/accounts";
 import { toCircleSmartAccount } from "@circle-fin/modular-wallets-core";
 import { sepolia } from "viem/chains";
@@ -16,7 +13,7 @@ const apiKey = process.env.GELATO_API_KEY!;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
 if (!apiKey || !PRIVATE_KEY) {
-  throw new Error("Missing GELATO_API_KEY, RPC_URL or PRIVATE_KEY in .env");
+  throw new Error("Missing GELATO_API_KEY & PRIVATE_KEY in .env");
 }
 
 // ─── 1. viem public client & signer ─────────────────────────────────────

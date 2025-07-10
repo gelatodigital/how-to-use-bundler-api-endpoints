@@ -1,17 +1,8 @@
-/**************************************************************************
- *  Query Gelato bundler → eth_getUserOperationByHash                      *
- *                                                                        *
- *  ENV required:                                                         *
- *    GELATO_API_KEY   (1Balance sponsor key)                             *
- *    CHAIN_ID         (default 11155111 for Sepolia)                     *
- *                                                                        *
- *  Usage: HASH=0xabc… pnpm ts-node getUserOperationByHash.ts             *
- **************************************************************************/
 import 'dotenv/config';
 
 const apiKey   = process.env.GELATO_API_KEY!;
 const chainId  = process.env.CHAIN_ID ?? '11155111';
-const hash     = process.env.HASH;                 // pass with HASH=0x…
+const hash     = "your-user-operation-hash";                 // pass with HASH=0x…
 
 if (!apiKey)   throw new Error('Missing GELATO_API_KEY in .env');
 if (!hash)     throw new Error('Provide HASH env var (userOpHash to query)');
