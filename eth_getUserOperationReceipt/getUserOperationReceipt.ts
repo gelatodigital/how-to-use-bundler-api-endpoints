@@ -1,7 +1,8 @@
 import 'dotenv/config';
 
 const chainId = process.env.CHAIN_ID ?? '11155111';
-const hash    = "your-user-operation-hash";
+const hash =
+  "0x324af57c611ebafc0da977dc968cf16f95726221d51cada4ccb423603378a1a5"; // add your user operation hash here
 //ex. HASH=0x1614d689246cabfa884d069bcbde473b1987243e0fe735eecc4fd6aeca6e04bc
 
 const bundlerUrl =

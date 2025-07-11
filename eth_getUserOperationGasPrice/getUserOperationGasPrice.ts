@@ -1,13 +1,13 @@
 import 'dotenv/config';
 
-const chainId   = process.env.CHAIN_ID  ?? '11155111';
+const chainId   = process.env.CHAIN_ID  ?? '421614';
 const apiKey    = process.env.GELATO_API_KEY ?? '';
 
 if (!apiKey)
   throw new Error('Missing GELATO_API_KEY in .env - Required for sponsored mode');
 
 // for native and erc20 remove the sponsorApiKey from the url.
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc?sponsorApiKey=${apiKey}`;
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc`;
 
 const body = {
   id: 1,
@@ -20,7 +20,6 @@ const toGwei = (x: `0x${string}`) => parseInt(x, 16) / 1e9;
 
 (async () => {
   console.log('➡️  Requesting gas price (Sponsored Mode)…');
-  console.log(`🔑 Using API Key: ${apiKey.slice(0, 10)}...`);
   
   const { result, error } = await fetch(bundlerUrl, {
     method: 'POST',

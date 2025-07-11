@@ -15,7 +15,7 @@
     "estimate-gas-native": "pnpm ts-node eth_estimateUserOperationGas/Native-Payments/NativeGasPayments.ts",
     "estimate-gas-onchain-sponsored": "pnpm ts-node eth_estimateUserOperationGas/OnChain-Paymasters/SponsoredGas.ts",
     "estimate-gas-erc20": "pnpm ts-node eth_estimateUserOperationGas/OnChain-Paymasters/Erc20GasPayments.ts",
-    "test-all-payment-methods": "pnpm ts-node test-all-payment-methods.ts"
+    "run-all-endpoints": "pnpm ts-node run-all-endpoints.ts"
   },
   "dependencies": {
     "@circle-fin/modular-wallets-core": "^1.0.9",
