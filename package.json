@@ -15,6 +15,7 @@
     "estimate-gas-native": "pnpm ts-node eth_estimateUserOperationGas/Native-Payments/NativeGasPayments.ts",
     "estimate-gas-onchain-sponsored": "pnpm ts-node eth_estimateUserOperationGas/OnChain-Paymasters/SponsoredGas.ts",
     "estimate-gas-erc20": "pnpm ts-node eth_estimateUserOperationGas/OnChain-Paymasters/Erc20GasPayments.ts",
+    "estimate-gas-state-override": "pnpm ts-node eth_estimateUserOperationGas/State-Overrides/stateOverrideExample.ts",
     "run-all-endpoints": "pnpm ts-node run-all-endpoints.ts"
   },
   "dependencies": {
