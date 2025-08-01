@@ -2,9 +2,10 @@ import 'dotenv/config';
 
 async function main() {
   const CHAIN_ID = process.env.CHAIN_ID ?? '84532';
+  const GELATO_API_KEY = process.env.GELATO_API_KEY;
 
   const bundlerUrl =
-    `https://api.gelato.digital/bundlers/${CHAIN_ID}/rpc`;
+    `https://api.gelato.digital/bundlers/${CHAIN_ID}/rpc?apiKey=${GELATO_API_KEY}`;
 
   // JSON-RPC 2.0 body
   const payload = {

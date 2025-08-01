@@ -36,7 +36,7 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
 console.log("Circle Smart Account address:", account.address);
 
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc?sponsorApiKey=${apiKey}`;
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc?apiKey=${apiKey}&sponsored=true`;
 
 const bundlerClient = createBundlerClient({
   client: publicClient,

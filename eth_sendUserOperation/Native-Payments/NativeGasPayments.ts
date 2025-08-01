@@ -18,6 +18,8 @@ const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032";
 const chain = sepolia;
 const chainID = chain.id;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
+const GELATO_API_KEY = process.env.GELATO_API_KEY;
+
 
 if (!PRIVATE_KEY) {
   throw new Error("Missing PRIVATE_KEY in .env");
@@ -34,7 +36,7 @@ console.log("Circle Smart Account address:", account.address);
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
 const bundlerClient = createBundlerClient({
   client: publicClient,
-  transport: http(`https://api.gelato.digital/bundlers/${chainID}/rpc`),
+  transport: http(`https://api.gelato.digital/bundlers/${chainID}/rpc?apiKey=${GELATO_API_KEY}`),
   userOperation: {
     estimateFeesPerGas: async ({ account, bundlerClient, userOperation }) => {
       const gasPrices =
@@ -50,7 +52,7 @@ const bundlerClient = createBundlerClient({
   },
 });
 
-/* ───────────────── 4. Build & sign the (sponsored) UserOperation ────── */
+/* ───────────────── 4. Build & sign the UserOperation ────── */
 let userOperation = await bundlerClient.prepareUserOperation({
   account,
   calls: [{ to: account.address, value: 0n, data: "0x" }],

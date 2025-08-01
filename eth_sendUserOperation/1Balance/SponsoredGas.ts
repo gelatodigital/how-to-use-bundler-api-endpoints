@@ -28,7 +28,7 @@ console.log("Circle Smart Account address:", account.address);
 const bundlerClient = createBundlerClient({
   client: publicClient,
   transport: http(
-    `https://api.gelato.digital/bundlers/${chainID}/rpc?sponsorApiKey=${apiKey}`
+    `https://api.gelato.digital/bundlers/${chainID}/rpc?apiKey=${apiKey}&sponsored=true`
   ),
 });
 
@@ -80,7 +80,7 @@ const submitOptions = {
 
 console.log("\nSubmitting UserOperation to Gelato …");
 const res = await fetch(
-  `https://api.gelato.digital/bundlers/${chainID}/rpc?sponsorApiKey=${apiKey}`,
+  `https://api.gelato.digital/bundlers/${chainID}/rpc?apiKey=${apiKey}&sponsored=true`,
   submitOptions
 ).then((r) => r.json());
 

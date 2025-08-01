@@ -22,6 +22,7 @@ const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
 const chain = baseSepolia;
 const chainID = chain.id; // 84532
 
+const GELATO_API_KEY = process.env.GELATO_API_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 const PAYMASTER_ADDRESS = "0x31BE08D380A21fc740883c0BC434FcFc88740b58";
@@ -36,7 +37,7 @@ const account = await toCircleSmartAccount({ client, owner });
 console.log("Circle Smart Account address:", account.address);
 
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc?apiKey=${GELATO_API_KEY}`;
 
 const paymaster = {
   async getPaymasterData(parameters) {

@@ -4,10 +4,10 @@ const chainId   = process.env.CHAIN_ID  ?? '421614';
 const apiKey    = process.env.GELATO_API_KEY ?? '';
 
 if (!apiKey)
-  throw new Error('Missing GELATO_API_KEY in .env - Required for sponsored mode');
+  throw new Error('Missing GELATO_API_KEY in .env');
 
-// for native and erc20 remove the sponsorApiKey from the url.
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc`;
+// for native and erc20 remove the apiKey from the url.
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc?apiKey=${apiKey}`;
 
 const body = {
   id: 1,

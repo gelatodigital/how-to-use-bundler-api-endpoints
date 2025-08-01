@@ -113,7 +113,6 @@ Create a `.env` file in the project root:
 # Required for most operations
 PRIVATE_KEY=0x...                    # Your private key
 
-# Gelato API keys (for sponsored transactions)
 GELATO_API_KEY=your_gelato_api_key
 
 PAYMASTER_URL= your_paymaster_url
@@ -123,13 +122,12 @@ PAYMASTER_URL= your_paymaster_url
 
 ### **1. 1Balance Sponsored Transactions**
 - **Cost**: $0 gas fees for users
-- **Requirements**: `GELATO_API_KEY`
+- **Requirements**: set `sponsored` query param as true
 - **Use Cases**: User-friendly dApps, quick prototyping
 - **Scripts**: `send-userop-1balance`, `estimate-gas-1balance`
 
 ### **2. Native ETH Payment**
 - **Cost**: Users pay gas fees in ETH
-- **Requirements**: No API key needed
 - **Use Cases**: Traditional gas payment, no sponsorship available
 - **Scripts**: `send-userop-native`, `estimate-gas-native`
 

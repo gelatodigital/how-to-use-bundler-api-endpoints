@@ -24,6 +24,7 @@ const ENTRY_POINT = "0x0000000071727De22E5E9d8BAf0edAc6f37da032"; // v0.7
 const chain = sepolia;
 const chainID = chain.id; // 11155111
 
+const GELATO_API_KEY = process.env.GELATO_API_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY ?? "";
 
 if (!PRIVATE_KEY)
@@ -38,7 +39,7 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
 console.log("Circle Smart Account address:", account.address);
 
 /* ───────────────── 3. Bundler client (helpers only) ─────────────────── */
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc`;
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainID}/rpc?apiKey=${GELATO_API_KEY}`;
 
 const bundlerClient = createBundlerClient({
   client: publicClient,

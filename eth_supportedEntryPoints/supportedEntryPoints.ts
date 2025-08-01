@@ -1,8 +1,8 @@
 import 'dotenv/config';
 
 const chainId = process.env.CHAIN_ID ?? '11155111';
-
-const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc`;
+const GELATO_API_KEY = process.env.GELATO_API_KEY;  
+const bundlerUrl = `https://api.gelato.digital/bundlers/${chainId}/rpc?apiKey=${GELATO_API_KEY}`;
 
 const body = {
   id: 1,
