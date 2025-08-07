@@ -39,7 +39,7 @@ const toGwei = (x: `0x${string}`) => parseInt(x, 16) / 1e9;
         result.maxFeePerGas
       )} gwei)`
     );
-    console.log('💰 Mode: Sponsored (1Balance)');
+    console.log('💰 Mode: Sponsored (Gas Tank)');
   } else {
     console.error('❌  Gelato error:\n', error);
     process.exit(1);

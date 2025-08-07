@@ -24,7 +24,7 @@ const body = {
   if (res.result) {
     const gwei = parseInt(res.result, 16) / 1e9;
     console.log(`✅  maxPriorityFeePerGas: ${res.result}  (~${gwei} gwei)`);
-    console.log('💰 Mode: Sponsored (1Balance)');
+    console.log('💰 Mode: Sponsored (Gas Tank)');
   } else {
     console.error('❌  Gelato error:\n', res.error || res);
     process.exit(1);

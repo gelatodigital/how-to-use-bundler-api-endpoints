@@ -32,8 +32,8 @@ const simpleEndpoints = [
 // Estimation endpoints
 const estimationEndpoints = [
   {
-    name: "Estimate Gas - 1Balance Sponsored",
-    file: "./eth_estimateUserOperationGas/1Balance/SponsoredGas.ts",
+    name: "Estimate Gas - Gas Tank Sponsored",
+    file: "./eth_estimateUserOperationGas/Gas-Tank/SponsoredGas.ts",
   },
   {
     name: "Estimate Gas - Native Payments",
@@ -56,8 +56,8 @@ const estimationEndpoints = [
 // Send user operation endpoints
 const sendUserOperationEndpoints = [
   {
-    name: "Send User Operation - 1Balance Sponsored",
-    file: "./eth_sendUserOperation/1Balance/SponsoredGas.ts",
+    name: "Send User Operation - Gas Tank Sponsored",
+    file: "./eth_sendUserOperation/Gas-Tank/SponsoredGas.ts",
   },
   {
     name: "Send User Operation - Native Payments",

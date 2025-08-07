@@ -5,7 +5,7 @@ A comprehensive collection of scripts to interact with Gelato's Account Abstract
 ## 🎯 Overview
 
 This project provides TypeScript examples for all major Gelato bundler API endpoints, showing how to:
-- Send UserOperations with different gas payment models (1Balance Sponsored, Native ETH, OnChain Paymaster, ERC-20)
+- Send UserOperations with different gas payment models (Gas Tank Sponsored, Native ETH, OnChain Paymaster, ERC-20)
 - Estimate gas costs for various payment modes
 - Query operation status and receipts
 - Get gas prices and supported entry points
@@ -18,8 +18,8 @@ bundler-api-interaction/
 ├── eth_chainId/                           # Chain ID verification
 │   └── checkBundlerChainId.ts
 ├── eth_sendUserOperation/                 # Send UserOperations
-│   ├── 1Balance/
-│   │   └── SponsoredGas.ts               # 1Balance sponsored gas
+│   ├── Gas Tank/
+│   │   └── SponsoredGas.ts               # Gas Tank sponsored gas
 │   ├── Native-Payments/
 │   │   └── NativeGasPayments.ts         # Native ETH payment
 │   └── OnChain-Paymasters/
@@ -27,8 +27,8 @@ bundler-api-interaction/
 │       ├── Erc20GasPayments.ts          # ERC-20 token payment
 │       └── signPermit.ts                 # Permit signing utilities
 ├── eth_estimateUserOperationGas/          # Gas estimation
-│   ├── 1Balance/
-│   │   └── SponsoredGas.ts              # 1Balance gas estimation
+│   ├── Gas Tank/
+│   │   └── SponsoredGas.ts              # Gas Tank gas estimation
 │   ├── Native-Payments/
 │   │   └── NativeGasPayments.ts         # Native gas estimation
 │   └── OnChain-Paymasters/
@@ -62,8 +62,8 @@ pnpm run supported-entrypoints
 
 ### **UserOperation Commands**
 ```bash
-# Send UserOperation (1Balance sponsored)
-pnpm run send-userop-1balance
+# Send UserOperation (Gas Tank sponsored)
+pnpm run send-userop-gastank
 
 # Send UserOperation (native ETH payment)
 pnpm run send-userop-native
@@ -83,8 +83,8 @@ HASH=0xabc123... pnpm run get-receipt
 
 ### **Gas Estimation Commands**
 ```bash
-# Estimate gas costs (1Balance sponsored)
-pnpm run estimate-gas-1balance
+# Estimate gas costs (Gas Tank sponsored)
+pnpm run estimate-gas-gastank
 
 # Estimate gas costs (native ETH)
 pnpm run estimate-gas-native
@@ -120,11 +120,11 @@ PAYMASTER_URL= your_paymaster_url
 
 ## 📋 Gas Payment Models
 
-### **1. 1Balance Sponsored Transactions**
+### **1. Gas Tank Sponsored Transactions**
 - **Cost**: $0 gas fees for users
 - **Requirements**: set `sponsored` query param as true
 - **Use Cases**: User-friendly dApps, quick prototyping
-- **Scripts**: `send-userop-1balance`, `estimate-gas-1balance`
+- **Scripts**: `send-userop-gastank`, `estimate-gas-gastank`
 
 ### **2. Native ETH Payment**
 - **Cost**: Users pay gas fees in ETH
@@ -158,7 +158,7 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
 
 ## 🔑 Key Features
 
-- **Multiple Gas Payment Models**: 1Balance Sponsored, Native ETH, OnChain Paymaster, and ERC-20 token payment options
+- **Multiple Gas Payment Models**: Gas Tank Sponsored, Native ETH, OnChain Paymaster, and ERC-20 token payment options
 - **TypeScript**: Full type safety and IntelliSense support
 - **Error Handling**: Comprehensive error handling and user feedback
 - **Gas Optimization**: Automatic gas estimation and optimization
@@ -183,8 +183,8 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
    # Check if bundler is working
    pnpm run check-chain
    
-   # Send a 1Balance sponsored UserOperation (requires API key)
-   pnpm run send-userop-1balance
+   # Send a Gas Tank sponsored UserOperation (requires API key)
+   pnpm run send-userop-gastank
    
    # Send a native ETH UserOperation (no API key needed)
    pnpm run send-userop-native
@@ -200,6 +200,6 @@ const account = await toCircleSmartAccount({ client: publicClient, owner: signer
 ## 🔗 Useful Links
 
 - [Gelato Documentation](https://docs.gelato.network/)
-- [1Balance Sponsorship](https://docs.gelato.network/developer-services/1balance)
+- [Gas Tank Sponsorship](https://docs.gelato.cloud/Paymaster-&-Bundler/GasTank/Introduction)
 - [ERC-4337 Specification](https://eips.ethereum.org/EIPS/eip-4337)
 - [Circle](https://developers.circle.com/w3s/programmable-wallets)
